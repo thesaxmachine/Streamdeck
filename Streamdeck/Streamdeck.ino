@@ -35,7 +35,7 @@ void detectButton(){
       //sets the level of light for the frame and button
       lights[f][i] = bitRead(buttons, i) ? 0 : 10;  //ternary operator
       //lights is a byte array so each of the datapoints in f and i are 8 bits
-      //we are iterating through each of the bits to set the light level(???)
+      //we are iterating through each of the bits to set the which lights need to turn on and at what intensity
       for (int ii = 0; ii < 8; ii++) {
         //clock low and hold
         digitalWrite(SCK, LOW);
@@ -43,7 +43,20 @@ void detectButton(){
         //setting the data on MISO to clock into the button pad
         //if we are in the colour frames set the MISO to clock out data
         if (f < 3) digitalWrite(MISO, bitRead(lights[f][i], ii));
-        //if we are in the button frame clock in the data from the button pad into the button variable at the position it needs to be
+        //this next statement is done on all the frames but for the first three frames the data doesn't really matter
+        //according to the documentation the last frame is the button frame and that is where we read in the button data
+        //while we clock in data through MISO, we read the bytes out from MOSI
+        //there are only two possible values 0x00 and 0xFF
+        //0x00 - represents a pressed button
+        //0xFF - represents a non pressed button
+        //since all the values in the byte are the same in the byte when pressed or not, we just need to read
+        //the first bit to represent the state of the button.
+        //This is stored in the buttons variable which is a 16 bit unsigned int.
+        //each of the bits represents one of the buttons, so when we check it with the bitRead() we can just isolate the one 
+        //button to light up whatever needs to be lit
+
+
+        
         else if (ii == 0) bitWrite(buttons, i, digitalRead(MOSI));
         delayMicroseconds(5);
         //clock in the data
