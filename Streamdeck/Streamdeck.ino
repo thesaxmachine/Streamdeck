@@ -2,12 +2,16 @@
 #define MISO 11
 #define MOSI 12
 #define SCK 13
+#define MAX_LEDS 16
 byte lights[3][16];  // [3] = Red, Blue, Green //
-byte pressed[3][16];
+byte red[MAX_LEDS];
+byte blue[MAX_LEDS];
+byte green[MAX_LEDS];
 
 unsigned int buttons = 0;
 
 void setup() {
+  Serial.begin(9600);
   pinMode(CS, OUTPUT);
   pinMode(MISO, OUTPUT);
   pinMode(MOSI, INPUT);
@@ -15,10 +19,14 @@ void setup() {
   digitalWrite(CS, LOW);
   delay(1);
   memset(lights, 0, sizeof(lights)); //fill the lights array with zeros
-  memset(pressed,0, sizeof(pressed));
+  memset(red,0, sizeof(red));
+  memset(blue,0, sizeof(blue));
+  memset(green,0, sizeof(green));
 }
 void loop() {
+  //Serial.println("helk");
   detectButton();
+
 }
 
 void detectButton(){
@@ -55,9 +63,9 @@ void detectButton(){
         //each of the bits represents one of the buttons, so when we check it with the bitRead() we can just isolate the one 
         //button to light up whatever needs to be lit
 
-
-        
-        else if (ii == 0) bitWrite(buttons, i, digitalRead(MOSI));
+        else if (ii == 0) {
+          bitWrite(buttons, i, digitalRead(MOSI));
+        }
         delayMicroseconds(5);
         //clock in the data
         digitalWrite(SCK, HIGH);
